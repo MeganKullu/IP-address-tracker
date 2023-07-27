@@ -7,6 +7,28 @@ import icon from "./MapIcon"
 import { useState, useEffect } from 'react'
 function App() {
 
+  const [address, setAddress] = useState();
+    const [ipAddress, setIpAddress] = useState("");
+
+    const apiKey = import.meta.env.VITE_MY_API_KEY;
+  
+    useEffect(() => {
+      try{
+        const getData = async () => {
+          const response = await fetch (`https://geo.ipify.org/api/v2/country?apiKey=${apiKey}&ipAddress=8.8.8.8`)
+          const data = response.json()
+          setAddress(data);
+          console.log(data);
+        }
+
+        getData()
+
+      }catch(error) {
+        console.error(error)
+
+      }
+    }, [])
+
   return (
     <>
       <div className='h-screen'>
@@ -26,22 +48,24 @@ function App() {
 
         </aside>
 
+        {address && 
+        <>
         <main className='relative z-50 rounded-xl flex bg-white p-8 -mt-24 -mb-56 lg:-mb-24 lg:-mt-16 xl:-mt-12 shadow-lg w-10/12 lg:w-2/3 mx-auto' style={{zIndex:1000}}>
           <div className='flex flex-col lg:flex-row w-full place-content-between items-center lg:items-start gap-3 text-center lg:text-justify'>
             <div className='flex flex-col lg:border-r-2 lg:pr-16  lg: border-dark-gray'>
               <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>IP ADDRESS</p>
-              <p className="text-lg text-black font-bold">192.212.174.101</p>
+              <p className="text-lg text-black font-bold">{address.ip}</p>
             </div>
             <div className='flex flex-col lg:border-r-2 lg:pr-16  lg: border-dark-gray'>
               <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>LOCATION</p>
-              <p className="text-lg text-black font-bold">Brooklyn, NY 10001</p>
+              <p className="text-lg text-black font-bold">{address.location.region},{address.location.country}1</p>
             </div>
             <div className='flex flex-col lg:border-r-2 lg:pr-16  lg: border-dark-gray'>
               <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>TIMEZONE</p>
-              <p className="text-lg text-black font-bold">UTC -05:00</p>
+              <p className="text-lg text-black font-bold">UTC {address.location.timezone}</p>
             </div>
             <div className='flex flex-col '>
-              <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>ISP</p>
+              <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>{address.isp}</p>
               <p className="text-lg text-black font-bold">SpaceX Starlink</p>
             </div>
           </div>
@@ -57,7 +81,7 @@ function App() {
             </Popup>
           </Marker>
         </MapContainer>
-        <footer></footer>
+        </>}
       </div>
     </>
   )
