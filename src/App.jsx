@@ -9,7 +9,7 @@ import MarkerPos from './MarkerPos';
 function App() {
   const initialAddressState = {
     ip: "192.212.174.101",
-    location: { region: "California", country: "US", timezone: "07.00", lat: 51.505, lng: -0.09 },
+      location: { region: "California", country: "US", timezone: "07.00", lat: 34.04915,lng: -118.09462},
     isp: "Southern California Edison"
   };
 
