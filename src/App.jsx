@@ -5,17 +5,18 @@ import arrow from "./images/icon-arrow.svg";
 import background from "./images/pattern-bg-desktop.png";
 import { useState, useEffect } from 'react';
 import MarkerPos from './MarkerPos';
+import axios from 'axios';
 
 function App() {
   const initialAddressState = {
-    ip: "192.212.174.101",
-      location: { region: "California", country: "US", timezone: "07.00", lat: 34.04915,lng: -118.09462},
-    isp: "Southern California Edison"
+    ip: "",
+    location: { region: "", country: "", timezone: "", lat: 0, lng: 0 },
+    isp: ""
   };
 
-  const [address, setAddress] = useState(initialAddressState);// state to update the address from the api call
-  const [ipAddress, setIpAddress] = useState("");//state to set the ip address
-  const [shouldFly, setShouldFly] = useState(false);// state to determine whether to fly to new location
+  const [address, setAddress] = useState(initialAddressState);
+  const [ipAddress, setIpAddress] = useState("");
+  const [shouldFly, setShouldFly] = useState(false);
   const apiKey = import.meta.env.VITE_MY_API_KEY;
   const checkIp = /^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$/;
   const checkDomain = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/i;
@@ -26,11 +27,38 @@ function App() {
     setShouldFly(false);
   };
 
-  // useEffect to call the reset function on component load
+  // useEffect to call the reset function on component load and fetch initial data
   useEffect(() => {
-    resetAddress();
-  }, []);
-   
+    // Fetch user's IP address on initial load
+    axios.get('https://api64.ipify.org?format=json')
+      .then(response => {
+        setIpAddress(response.data.ip);
+        return response.data.ip;
+      })
+      .then(ip => {
+        // Fetch the initial address data based on the user's IP address
+        return axios.get(`https://geo.ipify.org/api/v2/country,city?apiKey=${apiKey}&ipAddress=${ip}`);
+      })
+      .then(response => {
+        const data = response.data;
+        setAddress({
+          ip: data.ip,
+          location: {
+            region: data.location.region,
+            country: data.location.country,
+            timezone: data.location.timezone,
+            lat: data.location.lat,
+            lng: data.location.lng,
+          },
+          isp: data.isp,
+        });
+        setShouldFly(true);
+      })
+      .catch(error => {
+        console.error('Failed to fetch data:', error);
+        resetAddress();
+      });
+  }, []);  
   //async function to handle submit and api call
   async function handleSubmit(e) {
     e.preventDefault();
