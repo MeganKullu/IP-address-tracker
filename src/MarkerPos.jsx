@@ -13,9 +13,10 @@ export default function MarkerPos({ address }) {
       markerRef.current.setLatLng(newPosition);
 
       if (initialLoad) {
-        // Only fly to California on the initial load
         map.flyTo(newPosition, 13, {
           animate: true,
+          zoom: 5,
+          duration: 3,
         });
         setInitialLoad(false);
       } else {
@@ -28,7 +29,7 @@ export default function MarkerPos({ address }) {
   }, [map, address, initialLoad]);
 
   const customIcon = new L.Icon({
-    iconUrl: "src/images/pin.png",
+    iconUrl: 'src/images/pin.png',
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
