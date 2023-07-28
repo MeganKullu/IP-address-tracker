@@ -3,15 +3,33 @@ import "leaflet/dist/leaflet.css";
 import './App.css';
 import arrow from "./images/icon-arrow.svg";
 import background from "./images/pattern-bg-desktop.png";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MarkerPos from './MarkerPos';
 
 function App() {
-  const [address, setAddress] = useState(null);
-  const [ipAddress, setIpAddress] = useState("");
+  const initialAddressState = {
+    ip: "192.212.174.101",
+    location: { region: "California", country: "US", timezone: "07.00", lat: 51.505, lng: -0.09 },
+    isp: "Southern California Edison"
+  };
+
+  const [address, setAddress] = useState(initialAddressState);// state to update the address from the api call
+  const [ipAddress, setIpAddress] = useState("");//state to set the ip address
+  const [shouldFly, setShouldFly] = useState(false);// state to determine whether to fly to new location
   const apiKey = import.meta.env.VITE_MY_API_KEY;
   const checkIp = /^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$/;
   const checkDomain = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/i;
+
+  // Function to reset the address state to the initial template
+  const resetAddress = () => {
+    setAddress(initialAddressState);
+    setShouldFly(false);
+  };
+
+  // useEffect to call the reset function on component load
+  useEffect(() => {
+    resetAddress();
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,16 +37,19 @@ function App() {
     if (checkIp.test(ipAddress) || checkDomain.test(ipAddress)) {
       try {
         const response = await fetch(
-          `https://geo.ipify.org/api/v2/country?apiKey=${apiKey}&${checkIp.test(ipAddress) ? `ipAddress=${ipAddress}` : `domain=${ipAddress}`}`
+          `https://geo.ipify.org/api/v2/country,city?apiKey=${apiKey}&${checkIp.test(ipAddress) ? `ipAddress=${ipAddress}` : `domain=${ipAddress}`}`
         );
         const data = await response.json();
         setAddress(data);
+        setShouldFly(true);
+        console.log(address);
       } catch (error) {
         console.error(error);
       }
     } else {
       // Handle invalid IP address or domain
       alert("Invalid IP address or domain.");
+      resetAddress(); // Call the reset function to reset the address state to initial values
     }
   }
 
@@ -60,7 +81,7 @@ function App() {
           </form>
         </aside>
 
-        {address &&
+        {Object.keys(address).length > 0 && (
           <main
             className='relative z-50 rounded-xl flex bg-white p-8 -mt-24 -mb-56 lg:-mb-24 lg:-mt-16 xl:-mt-12 shadow-lg w-10/12 lg:w-2/3 mx-auto'
             style={{ zIndex: 1000 }}
@@ -72,24 +93,24 @@ function App() {
               </div>
               <div className='flex flex-col lg:border-r-2 lg:pr-16  lg: border-dark-gray'>
                 <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>LOCATION</p>
-                <p className="text-lg text-black font-bold">{address.location.region}, {address.location.country}</p>
+                <p className="text-lg text-black font-bold">{address.location.region} , {address.location.country}</p>
               </div>
               <div className='flex flex-col lg:border-r-2 lg:pr-16  lg: border-dark-gray'>
                 <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>TIMEZONE</p>
                 <p className="text-lg text-black font-bold">UTC {address.location.timezone}</p>
               </div>
               <div className='flex flex-col '>
-                <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>{address.isp}</p>
-                <p className="text-lg text-black font-bold">SpaceX Starlink</p>
+                <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>ISP</p>
+                <p className="text-lg text-black font-bold">{address.isp}</p>
               </div>
             </div>
           </main>
-        }
+        )}
 
-        {address && address.location.lat && address.location.lng &&
+        {address.location.lat !== 0 && address.location.lng !== 0 && (
           <MapContainer
-            center={[address.location.lat, address.location.lng]}
-            zoom={13}
+            center={ [address.location.lat, address.location.lng]}
+            zoom={shouldFly ? 13 : 5}
             scrollWheelZoom={false}
             style={{ height: "70vh", width: "100vw" }}
           >
@@ -97,12 +118,12 @@ function App() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <MarkerPos/>
+            <MarkerPos address={address} />
           </MapContainer>
-        }
+        )}
       </div>
     </>
-  )
+  );
 }
 
 export default App;

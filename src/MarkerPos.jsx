@@ -1,26 +1,29 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Marker, Popup, useMap } from "react-leaflet";
 
 export default function MarkerPos({ address }) {
-  const defaultPosition = [0, 0]; // Default position to center the map when no valid address is available
-  const position = address && address.location ? [address.location.lat, address.location.lng] : defaultPosition;
   const map = useMap();
+  const markerRef = useRef(null);
 
   useEffect(() => {
-    if (address && address.location && address.location.lat && address.location.lng) {
-      map.flyTo(position, 13, {
+    if (address && address.location && address.location.lat !== 0 && address.location.lng !== 0) {
+      const newPosition = [address.location.lat, address.location.lng];
+      markerRef.current.setLatLng(newPosition);
+      map.flyTo(newPosition, 13, {
         animate: true,
       });
     }
-  }, [map, position, address]);
+  }, [map, address]);
 
   return (
     <>
-      <Marker position={position}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
+      {address && address.location && address.location.lat !== 0 && address.location.lng !== 0 && (
+        <Marker position={[address.location.lat, address.location.lng]} ref={markerRef}>
+          <Popup>
+            A pretty CSS3 popup. <br /> Easily customizable.
+          </Popup>
+        </Marker>
+      )}
     </>
   );
 }
