@@ -14,7 +14,7 @@ export default function MarkerPos({ address }) {
 
       if (initialLoad) {
         // Only fly to California on the initial load
-        map.flyTo([34.04915, -118.09462], 13, {
+        map.flyTo(newPosition, 13, {
           animate: true,
         });
         setInitialLoad(false);
