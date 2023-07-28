@@ -37,7 +37,7 @@ function App() {
       })
       .then(ip => {
         // Fetch the initial address data based on the user's IP address
-        return axios.get(`https://geo.ipify.org/api/v2/country,city?apiKey=${apiKey}&ipAddress=${ip}`);
+        return axios.get(`https://geo.ipify.org/api/v2/country,city?apiKey=at_dcgJrqd7OU0uZESpGWbSppPiKC9Mr&ipAddress=${ip}`);
       })
       .then(response => {
         const data = response.data;
@@ -66,7 +66,7 @@ function App() {
     if (checkIp.test(ipAddress) || checkDomain.test(ipAddress)) {
       try {
         const response = await fetch(
-          `https://geo.ipify.org/api/v2/country,city?apiKey=${apiKey}&${checkIp.test(ipAddress) ? `ipAddress=${ipAddress}` : `domain=${ipAddress}`}`
+          `https://geo.ipify.org/api/v2/country,city?apiKey=at_dcgJrqd7OU0uZESpGWbSppPiKC9Mr&${checkIp.test(ipAddress) ? `ipAddress=${ipAddress}` : `domain=${ipAddress}`}`
         );
         const data = await response.json();
         setAddress(data);
