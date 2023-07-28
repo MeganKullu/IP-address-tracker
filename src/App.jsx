@@ -30,7 +30,8 @@ function App() {
   useEffect(() => {
     resetAddress();
   }, []);
-
+   
+  //async function to handle submit and api call
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -55,18 +56,19 @@ function App() {
 
   return (
     <>
-      <div className='h-screen'>
+      <div className='h-screen w-full flex flex-col'>
         <aside
-          className='w-full h-1/3 lg:h-2/6'
+          className='w-full xs-screen:h-80 small-screen:h-1/2 normal-screen:h-1/2 large-mobile:h-2/5 md:lg-1/4 lg:h-56 xl:h-64'
           style={{
             backgroundImage: `url(${background})`,
             backgroundRepeat: "no-repeat",
             objectFit: "cover",
+            backgroundSize: "100% 100%",
           }}
         >
-          <p className='text-2xl 2xl:text-2xl font-bold text-white pt-8 text-center'>IP Address Tracker</p>
-          <form autoComplete="off" onSubmit={handleSubmit} className='justify-center w-10/12 lg:max-w-xl mx-auto mt-6'>
-            <div className='flex mt-4 '>
+          <p className='text-2xl 2xl:text-2xl font-bold text-white pt-8 xl:pt-8 text-center'>IP Address Tracker</p>
+          <form autoComplete="off" onSubmit={handleSubmit} className='justify-center w-10/12 lg:max-w-xl mx-auto mt-6 xl:mt-4'>
+            <div className='flex  lg:mt-4  xl:mt-8 mb-4 '>
               <input
                 type="text"
                 className='p-4 lg:p-3 rounded-l-xl w-full'
@@ -83,7 +85,7 @@ function App() {
 
         {Object.keys(address).length > 0 && (
           <main
-            className='relative z-50 rounded-xl flex bg-white p-8 -mt-24 -mb-56 lg:-mb-24 lg:-mt-16 xl:-mt-12 shadow-lg w-10/12 lg:w-2/3 mx-auto'
+            className='relative z-50 rounded-xl flex bg-white p-8 -mt-28 md:-mt-40 lg:-mt-20 -mb-56 lg:-mb-16 shadow-lg w-10/12 lg:w-2/3 mx-auto'
             style={{ zIndex: 1000 }}
           >
             <div className='flex flex-col lg:flex-row w-full place-content-between items-center lg:items-start gap-3 text-center lg:text-justify'>
@@ -99,14 +101,15 @@ function App() {
                 <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>TIMEZONE</p>
                 <p className="text-lg text-black font-bold">UTC {address.location.timezone}</p>
               </div>
-              <div className='flex flex-col '>
+              <div className='flex flex-col'>
                 <p className='text-dark-gray text-xs tracking-widest font-bold mb-2'>ISP</p>
                 <p className="text-lg text-black font-bold">{address.isp}</p>
               </div>
             </div>
           </main>
         )}
-
+        
+       
         {address.location.lat !== 0 && address.location.lng !== 0 && (
           <MapContainer
             center={ [address.location.lat, address.location.lng]}
@@ -116,11 +119,14 @@ function App() {
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">            
+              </TileLayer>
             <MarkerPos address={address} />
+            
           </MapContainer>
         )}
+
+        
       </div>
     </>
   );

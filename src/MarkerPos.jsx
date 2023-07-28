@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Marker, Popup, useMap } from "react-leaflet";
+import { Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 
 export default function MarkerPos({ address }) {
@@ -38,9 +38,6 @@ export default function MarkerPos({ address }) {
     <>
       {address && address.location && address.location.lat !== 0 && address.location.lng !== 0 && (
         <Marker position={[address.location.lat, address.location.lng]} icon={customIcon} ref={markerRef}>
-          <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
-          </Popup>
         </Marker>
       )}
     </>
