@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Marker, useMap } from "react-leaflet";
-import L from "leaflet";
 
 export default function MarkerPos({ address }) {
   const map = useMap();
@@ -28,17 +27,12 @@ export default function MarkerPos({ address }) {
     }
   }, [map, address, initialLoad]);
 
-  const customIcon = new L.Icon({
-    iconUrl: 'src/images/pin.png',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
+  
 
   return (
     <>
       {address && address.location && address.location.lat !== 0 && address.location.lng !== 0 && (
-        <Marker position={[address.location.lat, address.location.lng]} icon={customIcon} ref={markerRef}>
+        <Marker position={[address.location.lat, address.location.lng]}  ref={markerRef}>
         </Marker>
       )}
     </>
